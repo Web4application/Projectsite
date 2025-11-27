@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Web4application — Project Knowledge Base</title>
+  <meta name="description" content="Clean, navigable snapshot of the Web4application project knowledge base." />
+  <link rel="preconnect" href="." />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='0.9em' font-size='90'%3E⚡%3C/text%3E%3C/svg%3E" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+<header class="site-header">
+  <div class="brand">
+    <span class="logo" aria-hidden="true">⚡</span>
+    <div>
+      <h1>Web4application</h1>
+      <p class="tag">Project Knowledge Base</p>
+    </div>
+  </div>
+  <nav class="nav" aria-label="Primary">
+    <a href="#apps">Apps</a>
+    <a href="#repos">Repositories</a>
+    <a href="#templates">Templates</a>
+    <a href="#domains">Domains</a>
+    <a href="#tools">Tools</a>
+  </nav>
+</header>
+
+<main class="container">
+  <section class="hero">
+    <div class="hero-copy">
+      <h2>Everything in one clean map</h2>
+      <p>Browse projects, repos, infra, and domains. Search across the whole stack — fast.</p>
+      <div class="search-wrap">
+        <input id="search" type="search" placeholder="Search projects, repos, tools…" aria-label="Search" />
+      </div>
+    </div>
+    <figure class="hero-figure">
+      <img src="assets/project-mindmap.png" alt="Mind map of Web4application knowledge base" />
+      <figcaption>Source: project mind‑map snapshot</figcaption>
+    </figure>
+  </section>
+
+  <div id="sections" class="grid"></div>
+</main>
+
+<footer class="site-footer">
+  <p>© Web4application · Built with vanilla HTML/CSS/JS.</p>
+</footer>
+
+<script>window.__SITE_DATA__ = {"title": "Web4application \u2014 Project Knowledge Base", "sections": [{"id": "apps", "label": "Apps / Projects", "items": ["Lola", "ChatGPT5 Mini", "ROO4AI", "Swiiftbot", "Web4Asset", "Web4AI Project Assistant"]}, {"id": "repos", "label": "Repositories (by theme)", "items": ["fadaka-blockhaain", "fadaka-dashboard", "fadaka-factory", "Fadakacoin", "assets", "btc-hack", "Btchack", "etck333", "Failenbae \u203a AI & Generative Systems", "Failenbae \u203a Web 4 / Infra / DevOps", "Failenbae \u203a Chat / Social / Fun Pro"]}, {"id": "templates", "label": "Templates & Demos", "items": ["BEEZ-Chat", "Bizz", "BLACKPINKchat", "DIscord", "blank-app", "demo-repository", "bnb-chain.github.io"]}, {"id": "domains", "label": "Domains", "items": ["api.Kubu-hai.com", "web4app.com", "Kong API Gateway", "Github Actions", "Alembic"]}, {"id": "tools", "label": "Tools / Infrastructure", "items": ["Docker Compose", "Homebrew packaging", "ChatGPT5 Mini logo", "Fadaka Blockchain", "Web4AI identity"]}]};</script>
+<script src="app.js"></script>
+</body>
+</html>

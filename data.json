@@ -1,0 +1,69 @@
+{
+  "title": "Web4application \u2014 Project Knowledge Base",
+  "sections": [
+    {
+      "id": "apps",
+      "label": "Apps / Projects",
+      "items": [
+        "Lola",
+        "ChatGPT5 Mini",
+        "ROO4AI",
+        "Swiiftbot",
+        "Web4Asset",
+        "Web4AI Project Assistant"
+      ]
+    },
+    {
+      "id": "repos",
+      "label": "Repositories (by theme)",
+      "items": [
+        "fadaka-blockhaain",
+        "fadaka-dashboard",
+        "fadaka-factory",
+        "Fadakacoin",
+        "assets",
+        "btc-hack",
+        "Btchack",
+        "etck333",
+        "Failenbae \u203a AI & Generative Systems",
+        "Failenbae \u203a Web 4 / Infra / DevOps",
+        "Failenbae \u203a Chat / Social / Fun Pro"
+      ]
+    },
+    {
+      "id": "templates",
+      "label": "Templates & Demos",
+      "items": [
+        "BEEZ-Chat",
+        "Bizz",
+        "BLACKPINKchat",
+        "DIscord",
+        "blank-app",
+        "demo-repository",
+        "bnb-chain.github.io"
+      ]
+    },
+    {
+      "id": "domains",
+      "label": "Domains",
+      "items": [
+        "api.Kubu-hai.com",
+        "web4app.com",
+        "Kong API Gateway",
+        "Github Actions",
+        "Alembic"
+      ]
+    },
+    {
+      "id": "tools",
+      "label": "Tools / Infrastructure",
+      "items": [
+        "Docker Compose",
+        "Homebrew packaging",
+        "ChatGPT5 Mini logo",
+        "Fadaka Blockchain",
+        "Web4AI identity"
+      ]
+    }
+  ]
+}
