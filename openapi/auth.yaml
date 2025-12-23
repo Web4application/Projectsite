@@ -1,0 +1,32 @@
+openapi: 3.0.3
+info:
+  title: Auth API
+  version: 1.0.0
+servers:
+  - url: http://localhost:8000
+paths:
+  /_/security/login:
+    post:
+      summary: Login and receive JWT
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [clientId, authToken, login]
+              properties:
+                clientId: { type: string }
+                authToken: { type: string }
+                login: { type: string }
+                passwordHash: { type: string }
+                passEncrypted: { type: boolean }
+      responses:
+        "200":
+          description: JWT token
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token: { type: string }
