@@ -1,0 +1,907 @@
+fragment WebsiteOwnerPermissions on Mutation {
+  query @redact {
+    role(key: { userUid_expr: "auth.uid", websiteId: $websiteId }) {
+      role @check(expr: "this == 'OWNER'", message: "Permission denied!")
+    }
+  }
+}
+
+fragment WebsiteEditorPermissions on Mutation {
+  query @redact {
+    role(key: { userUid_expr: "auth.uid", websiteId: $id }) {
+      role
+        @check(
+          expr: "this == 'OWNER' || this == 'EDITOR'"
+          message: "Permission denied!"
+        )
+    }
+  }
+}
+
+fragment AdminOnlyPermissions on Mutation {
+  query @redact {
+    user(key: { uid_expr: "auth.uid" }) {
+      role @check(expr: "this == 'admin'", message: "Permission denied!")
+    }
+  }
+}
+
+mutation UpsertUser(
+  $uid: String!
+  $name: String
+  $email: String
+  $phone: String
+  $cloudflareImageId: String
+  $bio: String
+) @auth(expr: "auth.uid == uid") {
+  user_upsert(
+    data: {
+      uid: $uid
+      name: $name
+      email: $email
+      phone: $phone
+      cloudflareImageId: $cloudflareImageId
+      bio: $bio
+    }
+  )
+}
+
+mutation CreateWebsite(
+  $id: UUID
+  $name: String!
+  $about: String!
+  $slug: String!
+  $phone: String!
+  $email: String!
+  $domain: String!
+) @auth(level: USER) @transaction {
+  query @redact {
+    user(key: { uid_expr: "auth.uid" }) {
+      uid
+        @check(
+          # ensure user exists on postgres
+          expr: "this == auth.uid"
+          message: "Something went wrong, please contact support!"
+        )
+    }
+  }
+
+  # This is a workaround to ensure that the user exists in the postgres
+  # database, we will remove this, once Firebase Auth triggers are working
+  user_upsert(data: { uid_expr: "auth.uid" })
+
+  website_insert(
+    data: {
+      id: $id
+      slug: $slug
+      name: $name
+      about: $about
+      email: $email
+      phone: $phone
+    }
+  )
+
+  role_insert(
+    data: { user: { uid_expr: "auth.uid" }, websiteId: $id, role: "OWNER" }
+  )
+
+  # domain settings
+  websiteDomain_insert(data: { websiteId: $id, domain: $domain, primary: true })
+
+  # theme
+  websiteTheme_insert(
+    data: {
+      websiteId: $id
+      webBackgroundColor: "#edebff"
+      accentColor: "#006eff"
+      hideBrands: false
+      hideLatestCars: false
+      hideTypes: false
+      ctaCallToActionDescription: "Buy your dream car today"
+      ctaCallToActionTitle: "Find your dream car"
+    }
+  )
+
+  contacts_insert(
+    # we default the contacts to the website owner's contacts
+    data: { id: $id, phone: $phone, email: $email }
+  )
+
+  socialMediaLinks_insert(
+    data: {
+      id: $id
+      facebook: $name
+      twitter: $name
+      instagram: $name
+      tiktok: $name
+      linkedin: $name
+      youtube: $name
+    }
+  )
+
+  #  external analytics settings
+  externalAnalyticsSettings_insert(data: { websiteId: $id })
+
+  # opening hours
+  openingHours_insertMany(
+    data: [
+      {
+        day: "weekdays"
+        websiteId: $id
+        openingTime: "09:00"
+        closingTime: "17:00"
+      }
+      {
+        day: "weekends"
+        websiteId: $id
+        openingTime: "09:00"
+        closingTime: "17:00"
+      }
+    ]
+  )
+
+  # The default plan is the free plan, which is inactive by default and allows 5
+  # cars to be listed
+  websitePlan_insert(
+    data: {
+      website: { id: $id }
+      isActive: false
+      createdBy: { uid_expr: "auth.uid" }
+    }
+  )
+}
+
+mutation UpdateWebsiteDetails(
+  $id: UUID!
+  $name: String
+  $about: String
+  $slug: String
+  $phone: String
+  $email: String
+) @auth(level: USER) {
+  ...WebsiteEditorPermissions
+
+  website_update(
+    id: $id
+    data: {
+      slug: $slug
+      name: $name
+      about: $about
+      email: $email
+      phone: $phone
+      updatedAt_expr: "request.time"
+    }
+  )
+}
+
+mutation UpsertContacts(
+  $phone: String
+  $email: String
+  $whatsapp: String
+  $websiteId: UUID!
+) @auth(level: USER) @transaction {
+  query @redact {
+    role(key: { userUid_expr: "auth.uid", websiteId: $websiteId }) {
+      role
+        @check(
+          expr: "this == 'OWNER' || this == 'EDITOR'"
+          message: "Permission denied!"
+        )
+    }
+  }
+
+  contacts_upsert(
+    data: { id: $websiteId, phone: $phone, email: $email, whatsapp: $whatsapp }
+  )
+
+  # update the contact field on the website
+  website_update(id: $websiteId, data: { contacts: { id: $websiteId } })
+}
+
+mutation UpsertSocialMediaLinks(
+  $id: UUID
+  $facebook: String
+  $twitter: String
+  $instagram: String
+  $youtube: String
+  $linkedIn: String
+  $tiktok: String
+  $websiteId: UUID
+) @auth(level: USER) @transaction {
+  query @redact {
+    role(key: { userUid_expr: "auth.uid", websiteId: $websiteId }) {
+      role
+        @check(
+          expr: "this == 'OWNER' || this == 'EDITOR'"
+          message: "Permission denied!"
+        )
+    }
+  }
+
+  socialMediaLinks_upsert(
+    data: {
+      id: $id
+      facebook: $facebook
+      twitter: $twitter
+      instagram: $instagram
+      youtube: $youtube
+      linkedin: $linkedIn
+      tiktok: $tiktok
+    }
+  )
+
+  # update the socialLinks field on the website
+  website_update(id: $websiteId, data: { socialLinks: { id: $id } })
+}
+
+mutation UpsertOpeningHours(
+  $day: String!
+  $openingTime: String!
+  $closingTime: String!
+  $websiteId: UUID!
+) @auth(level: USER) {
+  query @redact {
+    role(key: { userUid_expr: "auth.uid", websiteId: $websiteId }) {
+      role
+        @check(
+          expr: "this == 'OWNER' || this == 'EDITOR'"
+          message: "Permission denied!"
+        )
+    }
+  }
+
+  openingHours_upsert(
+    data: {
+      day: $day
+      openingTime: $openingTime
+      closingTime: $closingTime
+      websiteId: $websiteId
+    }
+  )
+}
+
+# todo: add the auth level
+mutation deleteOpeningHours($websiteId: UUID!, $day: String!)
+@auth(level: USER) {
+  query @redact {
+    role(key: { userUid_expr: "auth.uid", websiteId: $websiteId }) {
+      role
+        @check(
+          expr: "this == 'OWNER' || this == 'EDITOR'"
+          message: "Permission denied!"
+        )
+    }
+  }
+
+  openingHours_delete(key: { websiteId: $websiteId, day: $day })
+}
+
+mutation upsertAddress(
+  $address: String
+  $name: String
+  $city: String
+  $county: String
+  $websiteId: UUID!
+  $placeId: String!
+  $latitude: Float!
+  $longitude: Float!
+  $street: String
+  $postalCode: String
+) @auth(level: USER) {
+  query @redact {
+    role(key: { userUid_expr: "auth.uid", websiteId: $websiteId }) {
+      role
+        @check(
+          expr: "this == 'OWNER' || this == 'EDITOR'"
+          message: "Permission denied!"
+        )
+    }
+  }
+
+  address_upsert(
+    data: {
+      name: $name
+      address: $address
+      city: $city
+      county: $county
+      websiteId: $websiteId
+      placeId: $placeId
+      latitude: $latitude
+      longitude: $longitude
+      street: $street
+      postalCode: $postalCode
+    }
+  )
+}
+
+mutation UpsertCarModel(
+  $id: UUID
+  $make: String!
+  $model: String!
+  $type: String!
+) @auth(level: USER) {
+  query @redact {
+    user(key: { uid_expr: "auth.uid" }) {
+      role @check(expr: "this == 'admin'", message: "Permission denied!")
+    }
+  }
+
+  carModel_upsert(data: { id: $id, make: $make, model: $model, type: $type })
+}
+
+mutation DeleteCarModel($id: UUID!) @auth(level: USER) {
+  query @redact {
+    user(key: { uid_expr: "auth.uid" }) {
+      role @check(expr: "this == 'admin'", message: "Permission denied!")
+    }
+  }
+
+  carModel_delete(id: $id)
+}
+
+mutation UpsertModelTrim(
+  $id: UUID!
+  $websiteId: UUID!
+  $modelId: UUID!
+  $name: String
+  $year: Int!
+  $priceAmountZD: String!
+  $priceCurrencyCode: String!
+  $engineCapacity: String!
+  $fuelType: String
+  $isHybrid: Boolean
+  $isPlugInHybrid: Boolean
+  $transmission: String
+  $color: String
+  $interiorColor: String
+  $condition: String!
+  $mileage: String!
+  $mileageUnit: String!
+  $wheelSize: String
+  $numberOfSeats: Int
+  $numberOfDoors: Int
+  $about: String
+  $horsepower: String
+  $torque: String
+  $notableDamages: [String!]
+  $highlights: [String!]
+  $vin: String
+) @auth(level: USER) @transaction {
+  query
+    @redact
+    @check(
+      # probably not working as expected
+      expr: "this.websitePlan.isActive == true || this.websiteCarInfos[0].count < 6"
+      message: "You have reached the maximum number of cars allowed for your plan!"
+    ) {
+    role(key: { userUid_expr: "auth.uid", websiteId: $websiteId }) {
+      role
+        @check(
+          expr: "this == 'OWNER' || this == 'EDITOR'"
+          message: "Permission denied!"
+        )
+    }
+    websitePlan(key: { websiteId: $websiteId }) {
+      isActive
+    }
+    websiteCarInfos(where: { website: { id: { eq: $websiteId } } }, limit: 1) {
+      count
+    }
+  }
+
+  modelTrimPrices_upsert(
+    data: {
+      id: $id
+      currencyCode: $priceCurrencyCode
+      amountZD: $priceAmountZD
+    }
+  )
+
+  modelTrimOdometerReading_upsert(
+    data: { id: $id, reading: $mileage, unit: $mileageUnit }
+  )
+
+  modelTrim_upsert(
+    data: {
+      id: $id
+      websiteId: $websiteId
+      model: { id: $modelId }
+      name: $name
+      year: $year
+      engineCapacity: $engineCapacity
+      price: { id: $id }
+      mileage: { id: $id }
+      fuelType: $fuelType
+      isHybrid: $isHybrid
+      isPlugInHybrid: $isPlugInHybrid
+      transmission: $transmission
+      color: $color
+      condition: $condition
+      wheelSize: $wheelSize
+      numberOfSeats: $numberOfSeats
+      numberOfDoors: $numberOfDoors
+      about: $about
+      horsepower: $horsepower
+      torque: $torque
+      notableDamages: $notableDamages
+      highlights: $highlights
+      interiorColor: $interiorColor
+      vin: $vin
+      updatedAt_expr: "request.time"
+    }
+  )
+}
+
+mutation UpdateTrimAdditionalDetails(
+  $id: UUID!
+  $websiteId: UUID!
+  $about: String
+  $notableDamages: [String!]
+  $highlights: [String!]
+) @auth(level: USER) {
+  query @redact {
+    role(key: { userUid_expr: "auth.uid", websiteId: $websiteId }) {
+      role
+        @check(
+          expr: "this == 'OWNER' || this == 'EDITOR'"
+          message: "Permission denied!"
+        )
+    }
+  }
+
+  modelTrim_update(
+    key: { id: $id, websiteId: $websiteId }
+    data: {
+      about: $about
+      notableDamages: $notableDamages
+      highlights: $highlights
+    }
+  )
+}
+
+mutation ChangeModelTrimPublishStatus(
+  $id: UUID!
+  $websiteId: UUID!
+  $isPublished: Boolean!
+) @auth(level: USER) {
+  query @redact {
+    role(key: { userUid_expr: "auth.uid", websiteId: $websiteId }) {
+      role
+        @check(
+          expr: "this == 'OWNER' || this == 'EDITOR'"
+          message: "Permission denied!"
+        )
+    }
+  }
+
+  modelTrim_update(
+    key: { id: $id, websiteId: $websiteId }
+    data: { isPublished: $isPublished }
+  )
+}
+
+mutation ChangeModelTrimFeaturedStatus(
+  $id: UUID!
+  $websiteId: UUID!
+  $isFeatured: Boolean!
+) @auth(level: USER) {
+  query @redact {
+    role(key: { userUid_expr: "auth.uid", websiteId: $websiteId }) {
+      role
+        @check(
+          expr: "this == 'OWNER' || this == 'EDITOR'"
+          message: "Permission denied!"
+        )
+    }
+  }
+
+  modelTrim_update(
+    key: { id: $id, websiteId: $websiteId }
+    data: { isFeatured: $isFeatured }
+  )
+}
+
+mutation ChangeModelSoldStatus($id: UUID!, $websiteId: UUID!, $isSold: Boolean!)
+@auth(level: USER) {
+  query @redact {
+    role(key: { userUid_expr: "auth.uid", websiteId: $websiteId }) {
+      role
+        @check(
+          expr: "this == 'OWNER' || this == 'EDITOR'"
+          message: "Permission denied!"
+        )
+    }
+  }
+
+  modelTrim_update(
+    key: { id: $id, websiteId: $websiteId }
+    data: { isSold: $isSold }
+  )
+}
+
+mutation UpsertCarSpec(
+  $websiteId: UUID!
+  $trimID: UUID!
+  $category: String!
+  $name: String!
+  $value: Boolean!
+) @auth(level: USER) {
+  query @redact {
+    role(key: { userUid_expr: "auth.uid", websiteId: $websiteId }) {
+      role
+        @check(
+          expr: "this == 'OWNER' || this == 'EDITOR'"
+          message: "Permission denied!"
+        )
+    }
+  }
+
+  carTrimSpecs_upsert(
+    data: {
+      carTrim: { id: $trimID, websiteId: $websiteId }
+      type: $category
+      name: $name
+      value: $value
+    }
+  )
+}
+
+mutation UpsertCarMedia(
+  $id: UUID
+  $carTrimID: UUID!
+  $websiteId: UUID!
+  $category: String!
+  $mediaType: String!
+  $cloudflareID: String!
+) @auth(level: USER) {
+  # At some point, if your plan is not active, you should not be able to add
+  # more than 5 images for a car
+  query @redact {
+    role(key: { userUid_expr: "auth.uid", websiteId: $websiteId }) {
+      role
+        @check(
+          expr: "this == 'OWNER' || this == 'EDITOR'"
+          message: "Permission denied!"
+        )
+    }
+  }
+
+  carTrimMedia_upsert(
+    data: {
+      id: $id
+      carTrimId: $carTrimID
+      carTrimWebsiteId: $websiteId
+      category: $category
+      type: $mediaType
+      cloudflareID: $cloudflareID
+    }
+  )
+}
+
+mutation ToggleCarMediaFeaturedState(
+  $id: UUID!
+  $carTrimID: UUID!
+  $websiteId: UUID!
+  $isFeatured: Boolean!
+) @auth(level: USER) {
+  query @redact {
+    role(key: { userUid_expr: "auth.uid", websiteId: $websiteId }) {
+      role
+        @check(
+          expr: "this == 'OWNER' || this == 'EDITOR'"
+          message: "Permission denied!"
+        )
+    }
+  }
+
+  carTrimMedia_update(
+    key: { id: $id, carTrimWebsiteId: $websiteId, carTrimId: $carTrimID }
+    data: { isFeatured: $isFeatured }
+  )
+}
+
+mutation DeleteCarMedia($id: UUID!, $trimId: UUID!, $websiteId: UUID!)
+@auth(level: USER) {
+  query @redact {
+    role(key: { userUid_expr: "auth.uid", websiteId: $websiteId }) {
+      role
+        @check(
+          expr: "this == 'OWNER' || this == 'EDITOR'"
+          message: "Permission denied!"
+        )
+    }
+  }
+
+  carTrimMedia_delete(
+    key: { id: $id, carTrimWebsiteId: $websiteId, carTrimId: $trimId }
+  )
+}
+
+mutation AddWebsiteUserInvite(
+  $code: String!
+  $websiteId: UUID!
+  $role: String!
+  $expiresAt: Timestamp!
+) @auth(level: USER) {
+  # we check if the current user is allowed to create an invite code
+  query @redact {
+    role(key: { userUid_expr: "auth.uid", websiteId: $websiteId }) {
+      # check if current user is already a member of the website
+      role @check(expr: "this == 'OWNER'", message: "Permission denied!")
+    }
+
+    # check if the website is active, only active websites can invite users
+    websitePlan(key: { websiteId: $websiteId }) {
+      isActive
+        @check(
+          expr: "this == true"
+          message: "You need to activate your website to invite users!"
+        )
+    }
+  }
+
+  inviteCode_insert(
+    data: {
+      code: $code
+      website: { id: $websiteId }
+      assignedRole: $role
+      expiresAt: $expiresAt
+      createdBy: { uid_expr: "auth.uid" }
+    }
+  )
+}
+
+mutation RemoveWebsiteRole($websiteId: UUID!, $userUid: String!)
+@auth(level: USER) {
+  query @redact {
+    # get the current user role
+    role(key: { userUid_expr: "auth.uid", websiteId: $websiteId }) {
+      # check if the current user is allowed to remove a role from the website
+      role @check(expr: "this == 'OWNER'", message: "Permission denied!")
+
+      # cannot removes self
+      userUid
+        @check(
+          expr: "this != userUid"
+          message: "Cannot remove the last owner!"
+        )
+    }
+  }
+
+  role_delete(key: { websiteId: $websiteId, userUid: $userUid })
+}
+
+mutation AcceptWebsiteInvite($code: String!, $websiteId: UUID!, $role: String!)
+@auth(level: USER)
+@transaction {
+  query @redact {
+    inviteCode(key: { code: $code }) {
+      # check if the invite code is valid, not consumed and not expired
+      consumed @check(expr: "this == false", message: "Invalid invite code!")
+      # expiresAt
+      #   @check(expr: "this > request.time", message: "Invite code expired!")
+      websiteId
+        @check(expr: "this == websiteId", message: "Invalid invite code!")
+      assignedRole @check(expr: "this == role", message: "Invalid invite code!")
+    }
+    # role(key: { userUid_expr: "auth.uid", websiteId: $websiteId }) {
+    #   # check if the current user is already a member of the website
+    #   role @check(expr: "this.exists", message: "Already a member!")
+    # }
+  }
+
+  role_insert(
+    data: {
+      user: { uid_expr: "auth.uid" }
+      website: { id: $websiteId }
+      invite: { code: $code }
+      role: $role
+    }
+  )
+
+  #  mark the invite code as consumed
+  inviteCode_update(
+    key: { code: $code }
+    data: {
+      consumed: true
+      user: { uid_expr: "auth.uid" }
+      consumedAt_expr: "request.time"
+    }
+  )
+}
+
+mutation DeleteWebsite($websiteId: UUID!) @auth(level: USER) {
+  query @redact {
+    role(key: { userUid_expr: "auth.uid", websiteId: $websiteId }) {
+      role @check(expr: "this == 'OWNER'", message: "Permission denied!")
+    }
+  }
+
+  website_delete(id: $websiteId)
+}
+
+mutation AdminDeleteWebsite($websiteId: UUID!) @auth(level: USER) {
+  query @redact {
+    user(key: { uid_expr: "auth.uid" }) {
+      role @check(expr: "this == 'admin'", message: "Permission denied!")
+    }
+  }
+
+  website_delete(id: $websiteId)
+}
+
+mutation DeleteCarTrim($websiteId: UUID!, $id: UUID!) @auth(level: USER) {
+  query @redact {
+    role(key: { userUid_expr: "auth.uid", websiteId: $websiteId }) {
+      role
+        @check(
+          expr: "this == 'OWNER' || this == 'EDITOR'"
+          message: "Permission denied!"
+        )
+    }
+  }
+
+  modelTrim_delete(key: { websiteId: $websiteId, id: $id })
+}
+
+mutation UpsertTheme(
+  $webBackgroundColor: String!
+  $accentColor: String!
+  $websiteId: UUID!
+  $hideCarType: Boolean
+  $hideLatestCars: Boolean
+  $hideBrands: Boolean
+  $ctaBgColor: String
+  $ctaCallToActionDescription: String
+  $ctaCallToActionTitle: String
+) @auth(level: USER) {
+  query @redact {
+    role(key: { userUid_expr: "auth.uid", websiteId: $websiteId }) {
+      role @check(expr: "this == 'OWNER'", message: "Permission denied!")
+    }
+  }
+
+  websiteTheme_upsert(
+    data: {
+      websiteId: $websiteId
+      webBackgroundColor: $webBackgroundColor
+      accentColor: $accentColor
+      hideBrands: $hideBrands
+      hideLatestCars: $hideLatestCars
+      hideTypes: $hideCarType
+      ctaBgImage: $ctaBgColor
+      ctaCallToActionDescription: $ctaCallToActionDescription
+      ctaCallToActionTitle: $ctaCallToActionTitle
+    }
+  )
+}
+
+mutation PutWebsiteAnalyticsConfigurations(
+  $websiteId: UUID!
+  $googleAnalyticsID: String
+  $facebookPixelID: String
+  $facebookSiteVerificationTag: String
+  $googleTagManagerID: String
+  $googleSiteVerificationTag: String
+) @auth(level: USER) {
+  query @redact {
+    role(key: { userUid_expr: "auth.uid", websiteId: $websiteId }) {
+      role @check(expr: "this == 'OWNER'", message: "Permission denied!")
+    }
+  }
+
+  externalAnalyticsSettings_upsert(
+    data: {
+      websiteId: $websiteId
+      googleAnalyticsID: $googleAnalyticsID
+      facebookPixelID: $facebookPixelID
+      facebookSiteVerificationTag: $facebookSiteVerificationTag
+      googleTagManagerID: $googleTagManagerID
+      updatedAt_expr: "request.time"
+      googleSiteVerificationTag: $googleSiteVerificationTag
+    }
+  )
+}
+
+mutation UploadWebsiteLogo($websiteId: UUID!, $cloudflareImageId: String!)
+@auth(level: USER) {
+  ...WebsiteOwnerPermissions
+
+  website_update(
+    id: $websiteId
+    data: { logoCloudflareImageID: $cloudflareImageId }
+  )
+}
+
+mutation AdminRecordPayment(
+  $websiteId: UUID!
+  $transactionId: String
+  $paymentMethod: String!
+  $amountZD: String!
+  $datePaid: Timestamp!
+  $validFrom: Timestamp!
+  $validTo: Timestamp!
+  $notes: String
+) @auth(level: USER) @transaction {
+  ...AdminOnlyPermissions
+
+  paymentDetail_insert(
+    data: {
+      website: { id: $websiteId }
+      transactionId: $transactionId
+      paymentMethod: $paymentMethod
+      amountZD: $amountZD
+      currencyCode: "KES"
+      validFrom: $validFrom
+      validTo: $validTo
+      datePaid: $datePaid
+      createdBy: { uid_expr: "auth.uid" }
+      notes: $notes
+    }
+  )
+
+  websitePlan_upsert(
+    data: {
+      website: { id: $websiteId }
+      validTo: $validTo
+      isActive: true
+      createdBy: { uid_expr: "auth.uid" }
+      notes: $notes
+    }
+  )
+}
+
+mutation AdminUpsertDomainForWebsite(
+  $websiteId: UUID!
+  $domain: String!
+  $primary: Boolean
+  $redirect: Boolean
+) @auth(level: USER) {
+  ...AdminOnlyPermissions
+
+  websiteDomain_insert(
+    data: {
+      websiteId: $websiteId
+      domain: $domain
+      primary: $primary
+      redirectToPrimary: $redirect
+    }
+  )
+}
+
+mutation AdminDeleteDomainForWebsite($websiteId: UUID!, $domain: String!) {
+  ...AdminOnlyPermissions
+
+  websiteDomain_delete(key: { websiteId: $websiteId, domain: $domain })
+}
+
+mutation UpsertBlogPost(
+  $websiteId: UUID!
+  $id: UUID
+  $title: String
+  $subtitle: String
+  $content: String
+  $featuredImage: String
+) @auth(level: USER) {
+  ...WebsiteEditorPermissions
+
+  post_upsert(
+    data: {
+      id: $id
+      website: { id: $websiteId }
+      title: $title
+      subtitle: $subtitle
+      content: $content
+      featuredImage: $featuredImage
+      updatedAt_expr: "request.time"
+    }
+  )
+
+  # add author
+  # blogAuthor_upsert(
+  #   data: {
+  #     post: { id: $id, websiteId: $websiteId }
+  #     user: { uid_expr: "auth.uid" }
+  #   }
+  # )
+}
