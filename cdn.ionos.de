@@ -1,0 +1,22 @@
+<!DOCTYPE webpage PUBLIC "-//Norman Walsh//DTD Websites V2.0//EN"
+          "http://docbook.sf.net/release/website/snapshot/website.dtd" [
+<!ENTITY % common.ent PUBLIC "-//OASIS//ENTITY DocBook Website Common Entities//EN"
+                      "../../common.ent"
+                      common.ent;
+                      ]>
+<webpage id="svg">
+<config param="rcsdate" value="$Date: 2002/05/21 13:29:24 $"/>
+<head>
+<title>SVG</title>
+<summary>SVG 1.1 Module</summary>
+</head>
+          <para>The SVG Module is an extension to DocBook XML <emphasis>V4.2</emphasis>. It adds
+support for SVG<emphasis>V1.1</emphasis> in <sgmltag>imageobject</sgmltag>.</para>
+         
+          <itemizedlist>
+
+                    <listitem><para><olink targetdocent="svg10b2.xml">Version 1.0 beta 2</olink></para></listitem>
+          
+          </itemizedlist>
+
+</webpage/>

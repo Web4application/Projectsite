@@ -1,4 +1,3 @@
-<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8" />
@@ -6,7 +5,6 @@
     <title>Projectsite – Innovating the Future</title>
     <link rel="stylesheet" href="assets/css/style.css" />
 </head>
-
 <body>
     <!-- NAVBAR -->
     <nav class="navbar">
@@ -18,7 +16,6 @@
             <li><a href="contact.html" class="btn">Contact</a></li>
         </ul>
     </nav>
-
     <!-- HERO -->
     <section class="hero">
         <div class="text">
@@ -31,7 +28,6 @@
             <a href="projects.html" class="cta">See Projects</a>
         </div>
     </section>
-
     html lang="en" class="antialiased scroll-smooth"><head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -109,7 +105,6 @@
     </style>
 </head>
 <body class="selection:bg-blue-500/20 selection:text-blue-200 min-h-screen flex flex-col">
-
     <!-- Navigation -->
     <nav class="fixed top-0 w-full z-50 border-b border-white/5 bg-black/50 backdrop-blur-xl">
         <div class="max-w-7xl mx-auto px-6 h-14 flex items-center justify-between">
@@ -119,14 +114,12 @@
                 </div>
                 <span class="font-semibold tracking-tight text-sm text-white">Web4<span class="text-neutral-500">Cloud</span></span>
             </div>
-            
             <div class="hidden md:flex items-center gap-8 text-xs font-medium text-neutral-400">
                 <a href="#" class="hover:text-white transition-colors">Nodes</a>
                 <a href="#" class="hover:text-white transition-colors">Storage</a>
                 <a href="#" class="hover:text-white transition-colors">Compute</a>
                 <a href="#" class="hover:text-white transition-colors">Pricing</a>
             </div>
-
             <div class="flex items-center gap-4">
                 <a href="#" class="hidden md:block text-xs font-medium text-neutral-400 hover:text-white transition-colors">Login</a>
                 <button class="text-xs font-medium bg-white text-black px-3 py-1.5 rounded hover:bg-neutral-200 transition-colors">
@@ -135,34 +128,27 @@
             </div>
         </div>
     </nav>
-
     <!-- Hero Section -->
     <main class="flex-grow pt-32 pb-24 relative overflow-hidden">
         <!-- Background Grid -->
         <div class="absolute inset-0 bg-grid-pattern z-0 pointer-events-none"></div>
-        
         <!-- Hero Glow -->
         <div class="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[300px] bg-blue-500/10 blur-[120px] rounded-full pointer-events-none z-0"></div>
-
         <div class="relative z-10 max-w-7xl mx-auto px-6">
             <div class="flex flex-col lg:flex-row items-center gap-16">
-                
                 <!-- Hero Content -->
                 <div class="flex-1 text-center lg:text-left">
                     <div class="inline-flex items-center gap-2 px-2.5 py-1 rounded border border-blue-500/20 bg-blue-500/10 text-[10px] text-blue-400 mb-8 font-mono">
                         <span class="w-1 h-1 rounded-full bg-blue-400 animate-pulse"></span>
                         v4.0.2 Stable Release
                     </div>
-                    
                     <h1 class="text-5xl md:text-7xl font-semibold tracking-tight text-gradient mb-6 leading-[1.05]">
                         The Sovereign <br>
                         Cloud Protocol.
-                    </h1>
-                    
+                    </h1>                    
                     <p class="text-base md:text-lg text-neutral-400 font-light leading-relaxed max-w-xl mx-auto lg:mx-0 mb-10">
                         A decentralized mesh of compute and storage. Replace centralized providers with a permissionless, symbiotic network of millions of nodes.
-                    </p>
-                    
+                    </p>   
                     <div class="flex flex-col sm:flex-row items-center gap-4 justify-center lg:justify-start">
                         <button class="w-full sm:w-auto px-5 py-2.5 bg-white text-black rounded text-sm font-medium hover:bg-neutral-200 transition-all flex items-center justify-center gap-2">
                             Start Building
@@ -177,7 +163,6 @@
                         </div>
                     </div>
                 </div>
-
                 <!-- Hero Visual: Terminal/Dashboard -->
                 <div class="flex-1 w-full max-w-lg lg:max-w-none animate-float">
                     <div class="relative rounded-xl border border-white/10 bg-[#0A0A0C]/90 backdrop-blur shadow-2xl shadow-blue-900/10 overflow-hidden">
@@ -188,7 +173,6 @@
                             <div class="w-2.5 h-2.5 rounded-full bg-green-500/20 border border-green-500/50"></div>
                             <div class="ml-auto text-[10px] text-neutral-500 font-mono">deploy.sh</div>
                         </div>
-                        
                         <!-- Terminal Content -->
                         <div class="p-6 font-mono text-xs md:text-sm">
                             <div class="flex flex-col gap-2">
@@ -216,8 +200,7 @@
                                 </div>
                             </div>
                         </div>
-                    </div>
-                    
+                    </div>                
                     <!-- Floating Badge -->
                     <div class="absolute -right-6 -bottom-6 bg-[#0F0F11] border border-white/10 rounded-lg p-4 shadow-xl flex items-center gap-4 max-w-[200px] z-20">
                         <div class="relative w-10 h-10">
@@ -234,7 +217,6 @@
                     </div>
                 </div>
             </div>
-
             <!-- Bento Grid Section -->
             <div class="mt-32">
                 <div class="flex items-end justify-between mb-12">
@@ -248,9 +230,7 @@
                         </button>
                     </div>
                 </div>
-
                 <div class="grid grid-cols-1 md:grid-cols-4 gap-4 md:gap-6 auto-rows-[minmax(180px,auto)]">
-                    
                     <!-- Card 1: Edge Compute (Large) -->
                     <div class="col-span-1 md:col-span-2 row-span-2 group relative rounded-xl border border-white/10 bg-[#0F0F11] p-8 overflow-hidden hover:border-white/20 transition-all duration-300">
                         <div class="absolute inset-0 bg-gradient-to-b from-blue-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
@@ -281,9 +261,10 @@
                             </div>
                         </div>
                     </div>
-
+                    
                     <!-- Card 2: Encrypted Storage -->
-                    <div class="col-span-1 md:col-span-2 group relative rounded-xl border border-white/10 bg-[#0F0F11] p-6 overflow-hidden hover:border-white/20 transition-all duration-300">
+                   
+<div class="col-span-1 md:col-span-2 group relative rounded-xl border border-white/10 bg-[#0F0F11] p-6 overflow-hidden hover:border-white/20 transition-all duration-300">
                         <div class="flex items-start justify-between">
                             <div>
                                 <h3 class="text-lg font-medium text-white mb-2">Sharded Storage</h3>
@@ -306,10 +287,11 @@
                                 <div class="h-full w-[50%] bg-purple-500/50"></div>
                             </div>
                         </div>
-                    </div>
+                   </div>
+                   
+<!-- Card 3: Bandwidth -->
 
-                    <!-- Card 3: Bandwidth -->
-                    <div class="col-span-1 group relative rounded-xl border border-white/10 bg-[#0F0F11] p-6 overflow-hidden hover:border-white/20 transition-all duration-300">
+                      <div class="col-span-1 group relative rounded-xl border border-white/10 bg-[#0F0F11] p-6 overflow-hidden hover:border-white/20 transition-all duration-300">
                         <div class="w-10 h-10 rounded bg-white/5 border border-white/10 flex items-center justify-center mb-4 text-emerald-400">
                             <span class="iconify" data-icon="lucide:zap" data-width="20"></span>
                         </div>
@@ -322,8 +304,7 @@
                             <span class="text-xs text-neutral-500 uppercase">ms latency</span>
                         </div>
                     </div>
-
-                    <!-- Card 4: AI Inference -->
+ <!-- Card 4: AI Inference -->
                     <div class="col-span-1 group relative rounded-xl border border-white/10 bg-[#0F0F11] p-6 overflow-hidden hover:border-white/20 transition-all duration-300">
                         <div class="w-10 h-10 rounded bg-white/5 border border-white/10 flex items-center justify-center mb-4 text-pink-400">
                             <span class="iconify" data-icon="lucide:brain" data-width="20"></span>
@@ -337,11 +318,9 @@
                             <div class="px-2 py-1 rounded bg-pink-500/10 border border-pink-500/20 text-[10px] text-pink-400">Mistral</div>
                         </div>
                     </div>
-
                 </div>
             </div>
-
-            <!-- Stats Section -->
+    <!-- Stats Section -->
             <div class="mt-24 border-y border-white/5 py-16">
                 <div class="grid grid-cols-2 md:grid-cols-4 gap-8">
                     <div class="text-center md:text-left">
@@ -362,10 +341,8 @@
                     </div>
                 </div>
             </div>
-
         </div>
     </main>
-
     <!-- Footer -->
     <footer class="bg-[#050505] border-t border-white/5 pt-16 pb-8">
         <div class="max-w-7xl mx-auto px-6">
@@ -381,7 +358,6 @@
                         Building the substrate for the symbiotic web. Open source, community governed, and mathematically verifiable.
                     </p>
                 </div>
-                
                 <div class="flex gap-16">
                     <div class="flex flex-col gap-4">
                         <h4 class="text-xs font-semibold text-white uppercase tracking-wider">Product</h4>
@@ -404,8 +380,7 @@
                         <a href="#" class="text-xs text-neutral-500 hover:text-white transition-colors">Careers</a>
                     </div>
                 </div>
-            </div>
-            
+            </div> 
             <div class="flex flex-col md:flex-row items-center justify-between pt-8 border-t border-white/5 gap-4">
                 <p class="text-[10px] text-neutral-600">Â© 2024 Web4 Application. Open Source MIT License.</p>
                 <div class="flex gap-4">
@@ -429,3 +404,4 @@
     </footer>
 </body>
 </html>
+<document></document></document>

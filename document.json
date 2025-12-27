@@ -1,0 +1,2440 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "PROXY-MAN API Docs",
+    "version": "1.0.0",
+    "description": "Each endpoint includes examples in various programming languages.\n\nYou can «Export» the documentation as OpenAPI for use in Postman, Insomnia, and other tools.\n\n<b>API rate limit — 3 req/s</b>"
+  },
+  "servers": [
+    {
+      "url": "https://proxy-man.com/api/v1"
+    }
+  ],
+  "security": [
+    {
+      "http": []
+    }
+  ],
+  "paths": {
+    "/countries": {
+      "get": {
+        "operationId": "country.list",
+        "summary": "Countries",
+        "tags": [
+          "Country"
+        ],
+        "responses": {
+          "200": {
+            "description": "Array of `CountryResource`",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/CountryResource"
+                      }
+                    }
+                  },
+                  "required": [
+                    "data"
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {}
+        ]
+      }
+    },
+    "/payments/create": {
+      "post": {
+        "operationId": "payments.create",
+        "summary": "Create a payment link",
+        "tags": [
+          "Payment"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreatePaymentRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "`PaymentResource`",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/PaymentResource"
+                    }
+                  },
+                  "required": [
+                    "data"
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/AuthenticationException"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationException"
+          }
+        }
+      }
+    },
+    "/payment-codes/redeem": {
+      "post": {
+        "operationId": "payment-codes.redeem",
+        "summary": "Redeem payment code",
+        "tags": [
+          "Payment"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RedeemPaymentCodeRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Payment code redeemed successfully"
+                    }
+                  },
+                  "required": [
+                    "message"
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/AuthenticationException"
+          },
+          "403": {
+            "$ref": "#/components/responses/AuthorizationException"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationException"
+          }
+        }
+      }
+    },
+    "/payments/methods": {
+      "get": {
+        "operationId": "payments.methods",
+        "summary": "Get payment methods",
+        "tags": [
+          "Payment"
+        ],
+        "responses": {
+          "200": {
+            "description": "Array of `PaymentMethodResource`",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/PaymentMethodResource"
+                      }
+                    }
+                  },
+                  "required": [
+                    "data"
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/AuthenticationException"
+          }
+        }
+      }
+    },
+    "/proxies/my": {
+      "post": {
+        "operationId": "proxies.my",
+        "summary": "[ALL] My Proxies",
+        "tags": [
+          "Proxy"
+        ],
+        "parameters": [
+          {
+            "name": "per_page",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "default": 20
+            }
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Paginated set of `ProxyResource`",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/ProxyResource"
+                      }
+                    },
+                    "meta": {
+                      "type": "object",
+                      "properties": {
+                        "current_page": {
+                          "type": "integer"
+                        },
+                        "from": {
+                          "type": [
+                            "integer",
+                            "null"
+                          ]
+                        },
+                        "last_page": {
+                          "type": "integer"
+                        },
+                        "links": {
+                          "type": "array",
+                          "description": "Generated paginator links.",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "url": {
+                                "type": [
+                                  "string",
+                                  "null"
+                                ]
+                              },
+                              "label": {
+                                "type": "string"
+                              },
+                              "active": {
+                                "type": "boolean"
+                              }
+                            },
+                            "required": [
+                              "url",
+                              "label",
+                              "active"
+                            ]
+                          }
+                        },
+                        "path": {
+                          "type": [
+                            "string",
+                            "null"
+                          ],
+                          "description": "Base path for paginator generated URLs."
+                        },
+                        "per_page": {
+                          "type": "integer",
+                          "description": "Number of items shown per page."
+                        },
+                        "to": {
+                          "type": [
+                            "integer",
+                            "null"
+                          ],
+                          "description": "Number of the last item in the slice."
+                        },
+                        "total": {
+                          "type": "integer",
+                          "description": "Total number of items being paginated."
+                        }
+                      },
+                      "required": [
+                        "current_page",
+                        "from",
+                        "last_page",
+                        "links",
+                        "path",
+                        "per_page",
+                        "to",
+                        "total"
+                      ]
+                    },
+                    "links": {
+                      "type": "object",
+                      "properties": {
+                        "first": {
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        },
+                        "last": {
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        },
+                        "prev": {
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        },
+                        "next": {
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        }
+                      },
+                      "required": [
+                        "first",
+                        "last",
+                        "prev",
+                        "next"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "data",
+                    "links",
+                    "meta"
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/AuthenticationException"
+          }
+        }
+      }
+    },
+    "/proxies/buy": {
+      "post": {
+        "operationId": "proxies.buy",
+        "summary": "[STATIC] Buy Proxy",
+        "tags": [
+          "Proxy"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateOrderRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "`OrderResource`",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/OrderResource"
+                    }
+                  },
+                  "required": [
+                    "data"
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/AuthenticationException"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationException"
+          }
+        }
+      }
+    },
+    "/proxies/prolong": {
+      "post": {
+        "operationId": "proxies.prolong",
+        "summary": "[ALL] Prolong Proxy (time/GB)",
+        "tags": [
+          "Proxy"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ProlongTrafficProxyRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "`ProxyResource`",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/ProxyResource"
+                    }
+                  },
+                  "required": [
+                    "data"
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/AuthenticationException"
+          },
+          "403": {
+            "$ref": "#/components/responses/AuthorizationException"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationException"
+          }
+        }
+      }
+    },
+    "/proxies/gates": {
+      "get": {
+        "operationId": "proxies.gateList",
+        "summary": "[ALL] Gates",
+        "tags": [
+          "Proxy"
+        ],
+        "parameters": [
+          {
+            "name": "proxy_type",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "individual_ipv4",
+                "datacenter_ipv4",
+                "residential_ipv4",
+                "static_residential_ipv4",
+                "mobile_ipv4"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Array of `PoolGateItemResource`",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/PoolGateItemResource"
+                      }
+                    }
+                  },
+                  "required": [
+                    "data"
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/AuthenticationException"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationException"
+          }
+        }
+      }
+    },
+    "/proxies/gates/{id}": {
+      "get": {
+        "operationId": "proxies.gate",
+        "summary": "[ALL] Gate",
+        "tags": [
+          "Proxy"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "proxy_type",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "individual_ipv4",
+                "datacenter_ipv4",
+                "residential_ipv4",
+                "static_residential_ipv4",
+                "mobile_ipv4"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "`PoolGateItemResource`",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/PoolGateItemResource"
+                    }
+                  },
+                  "required": [
+                    "data"
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/AuthenticationException"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationException"
+          }
+        }
+      }
+    },
+    "/proxies/catalog": {
+      "get": {
+        "operationId": "proxies.catalog",
+        "summary": "[STATIC] Catalog",
+        "tags": [
+          "Proxy"
+        ],
+        "parameters": [
+          {
+            "name": "type",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "individual_ipv4",
+                "static_residential_ipv4"
+              ]
+            }
+          },
+          {
+            "name": "duration",
+            "in": "query",
+            "description": "minutes",
+            "schema": {
+              "type": "integer",
+              "minimum": 1
+            }
+          },
+          {
+            "name": "country_id",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "minimum": 1
+            }
+          },
+          {
+            "name": "gate_id",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Array of `CatalogItemResource`",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/CatalogItemResource"
+                      }
+                    }
+                  },
+                  "required": [
+                    "data"
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/AuthenticationException"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationException"
+          }
+        }
+      }
+    },
+    "/proxies/editProxy": {
+      "put": {
+        "operationId": "proxies.editProxy",
+        "summary": "[STATIC] Edit Proxy",
+        "tags": [
+          "Proxy"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EditProxyRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "`ProxyResource`",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/ProxyResource"
+                    }
+                  },
+                  "required": [
+                    "data"
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/AuthenticationException"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationException"
+          }
+        }
+      }
+    },
+    "/proxies/buyTrafficProxy": {
+      "post": {
+        "operationId": "proxies.buyTrafficProxy",
+        "summary": "[POOL] Buy Proxy",
+        "tags": [
+          "Proxy"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateOrderTrafficProxyRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "`OrderResource`",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/OrderResource"
+                    }
+                  },
+                  "required": [
+                    "data"
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/AuthenticationException"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationException"
+          }
+        }
+      }
+    },
+    "/proxies/editTrafficProxy": {
+      "put": {
+        "operationId": "proxies.editTrafficProxy",
+        "summary": "[POOL] Edit Proxy",
+        "tags": [
+          "Proxy"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EditTrafficProxyRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "`ProxyResource`",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/ProxyResource"
+                    }
+                  },
+                  "required": [
+                    "data"
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/AuthenticationException"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationException"
+          }
+        }
+      }
+    },
+    "/proxies/toggleAutoProlong": {
+      "put": {
+        "operationId": "proxies.toggleAutoProlong",
+        "summary": "[ALL] Toggle auto prolong",
+        "tags": [
+          "Proxy"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ToggleAutoProlongRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "`ProxyResource`",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/ProxyResource"
+                    }
+                  },
+                  "required": [
+                    "data"
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/AuthenticationException"
+          },
+          "403": {
+            "$ref": "#/components/responses/AuthorizationException"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationException"
+          }
+        }
+      }
+    },
+    "/proxies/exportProxy": {
+      "get": {
+        "operationId": "proxies.exportProxy",
+        "summary": "[POOL] Export Proxy",
+        "tags": [
+          "Proxy"
+        ],
+        "parameters": [
+          {
+            "name": "proxy_id",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "format",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "host:port",
+                "protocol"
+              ]
+            }
+          },
+          {
+            "name": "quantity",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "minItems": 0,
+                  "maxItems": 0,
+                  "additionalItems": false
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/AuthenticationException"
+          },
+          "403": {
+            "$ref": "#/components/responses/AuthorizationException"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationException"
+          }
+        }
+      }
+    },
+    "/proxies/pool/prices": {
+      "get": {
+        "operationId": "proxies.poolPrices",
+        "summary": "[POOL] Prices",
+        "tags": [
+          "Proxy"
+        ],
+        "parameters": [
+          {
+            "name": "proxy_type",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "mobile_ipv4",
+                "datacenter_ipv4",
+                "residential_ipv4"
+              ]
+            }
+          },
+          {
+            "name": "gate_id",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": [
+                "integer",
+                "null"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "priceList": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      },
+                      "minItems": 0,
+                      "maxItems": 0,
+                      "additionalItems": false
+                    }
+                  },
+                  "required": [
+                    "priceList"
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/AuthenticationException"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationException"
+          }
+        }
+      }
+    },
+    "/proxies/pool/countries": {
+      "get": {
+        "operationId": "proxies.poolCountries",
+        "summary": "[POOL] Countries",
+        "tags": [
+          "Proxy"
+        ],
+        "parameters": [
+          {
+            "name": "proxy_type",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "mobile_ipv4",
+                "datacenter_ipv4",
+                "residential_ipv4"
+              ]
+            }
+          },
+          {
+            "name": "gate_id",
+            "in": "query",
+            "schema": {
+              "type": [
+                "integer",
+                "null"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Array of `PoolLocationItemResource`",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/PoolLocationItemResource"
+                      }
+                    }
+                  },
+                  "required": [
+                    "data"
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/AuthenticationException"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationException"
+          }
+        }
+      }
+    },
+    "/proxies/pool/regions": {
+      "get": {
+        "operationId": "proxies.poolRegions",
+        "summary": "[POOL] Regions",
+        "tags": [
+          "Proxy"
+        ],
+        "parameters": [
+          {
+            "name": "proxy_type",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "mobile_ipv4",
+                "datacenter_ipv4",
+                "residential_ipv4"
+              ]
+            }
+          },
+          {
+            "name": "country_code",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "gate_id",
+            "in": "query",
+            "schema": {
+              "type": [
+                "integer",
+                "null"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Array of `PoolLocationItemResource`",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/PoolLocationItemResource"
+                      }
+                    }
+                  },
+                  "required": [
+                    "data"
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/AuthenticationException"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationException"
+          }
+        }
+      }
+    },
+    "/proxies/pool/cities": {
+      "get": {
+        "operationId": "proxies.poolCities",
+        "summary": "[POOL] Cities",
+        "tags": [
+          "Proxy"
+        ],
+        "parameters": [
+          {
+            "name": "proxy_type",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "mobile_ipv4",
+                "datacenter_ipv4",
+                "residential_ipv4"
+              ]
+            }
+          },
+          {
+            "name": "country_code",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "region_code",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "gate_id",
+            "in": "query",
+            "schema": {
+              "type": [
+                "integer",
+                "null"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Array of `PoolLocationItemResource`",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/PoolLocationItemResource"
+                      }
+                    }
+                  },
+                  "required": [
+                    "data"
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/AuthenticationException"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationException"
+          }
+        }
+      }
+    },
+    "/proxies/pool/isps": {
+      "get": {
+        "operationId": "proxies.poolISPs",
+        "summary": "[POOL] ISPs",
+        "tags": [
+          "Proxy"
+        ],
+        "parameters": [
+          {
+            "name": "proxy_type",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "mobile_ipv4",
+                "datacenter_ipv4",
+                "residential_ipv4"
+              ]
+            }
+          },
+          {
+            "name": "country_code",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "region_code",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "city_code",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "gate_id",
+            "in": "query",
+            "schema": {
+              "type": [
+                "integer",
+                "null"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Array of `PoolLocationItemResource`",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/PoolLocationItemResource"
+                      }
+                    }
+                  },
+                  "required": [
+                    "data"
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/AuthenticationException"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationException"
+          }
+        }
+      }
+    },
+    "/referrals": {
+      "get": {
+        "operationId": "referral.myReferrals",
+        "summary": "My Referrals",
+        "tags": [
+          "Referral"
+        ],
+        "responses": {
+          "200": {
+            "description": "Paginated set of `ReferralUserResource`",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/ReferralUserResource"
+                      }
+                    },
+                    "meta": {
+                      "type": "object",
+                      "properties": {
+                        "current_page": {
+                          "type": "integer"
+                        },
+                        "from": {
+                          "type": [
+                            "integer",
+                            "null"
+                          ]
+                        },
+                        "last_page": {
+                          "type": "integer"
+                        },
+                        "links": {
+                          "type": "array",
+                          "description": "Generated paginator links.",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "url": {
+                                "type": [
+                                  "string",
+                                  "null"
+                                ]
+                              },
+                              "label": {
+                                "type": "string"
+                              },
+                              "active": {
+                                "type": "boolean"
+                              }
+                            },
+                            "required": [
+                              "url",
+                              "label",
+                              "active"
+                            ]
+                          }
+                        },
+                        "path": {
+                          "type": [
+                            "string",
+                            "null"
+                          ],
+                          "description": "Base path for paginator generated URLs."
+                        },
+                        "per_page": {
+                          "type": "integer",
+                          "description": "Number of items shown per page."
+                        },
+                        "to": {
+                          "type": [
+                            "integer",
+                            "null"
+                          ],
+                          "description": "Number of the last item in the slice."
+                        },
+                        "total": {
+                          "type": "integer",
+                          "description": "Total number of items being paginated."
+                        }
+                      },
+                      "required": [
+                        "current_page",
+                        "from",
+                        "last_page",
+                        "links",
+                        "path",
+                        "per_page",
+                        "to",
+                        "total"
+                      ]
+                    },
+                    "links": {
+                      "type": "object",
+                      "properties": {
+                        "first": {
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        },
+                        "last": {
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        },
+                        "prev": {
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        },
+                        "next": {
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        }
+                      },
+                      "required": [
+                        "first",
+                        "last",
+                        "prev",
+                        "next"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "data",
+                    "links",
+                    "meta"
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/AuthenticationException"
+          }
+        }
+      }
+    },
+    "/referrals/stats": {
+      "get": {
+        "operationId": "referral.stats",
+        "summary": "Referral Stats",
+        "tags": [
+          "Referral"
+        ],
+        "responses": {
+          "200": {
+            "description": "`ReferralStatsResource`",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/ReferralStatsResource"
+                    }
+                  },
+                  "required": [
+                    "data"
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/AuthenticationException"
+          }
+        }
+      }
+    },
+    "/translations/{locale}": {
+      "get": {
+        "operationId": "translations.locale",
+        "summary": "Get current locale",
+        "tags": [
+          "Translation"
+        ],
+        "parameters": [
+          {
+            "name": "locale",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {}
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/user": {
+      "get": {
+        "operationId": "user.me",
+        "summary": "User Info",
+        "tags": [
+          "User"
+        ],
+        "responses": {
+          "200": {
+            "description": "`UserResource`",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/UserResource"
+                    }
+                  },
+                  "required": [
+                    "data"
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/AuthenticationException"
+          }
+        }
+      }
+    },
+    "/user/transactions": {
+      "get": {
+        "operationId": "user.transactions",
+        "summary": "User Transactions",
+        "tags": [
+          "User"
+        ],
+        "responses": {
+          "200": {
+            "description": "Paginated set of `BalanceTransactionResource`",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/BalanceTransactionResource"
+                      }
+                    },
+                    "meta": {
+                      "type": "object",
+                      "properties": {
+                        "current_page": {
+                          "type": "integer"
+                        },
+                        "from": {
+                          "type": [
+                            "integer",
+                            "null"
+                          ]
+                        },
+                        "last_page": {
+                          "type": "integer"
+                        },
+                        "links": {
+                          "type": "array",
+                          "description": "Generated paginator links.",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "url": {
+                                "type": [
+                                  "string",
+                                  "null"
+                                ]
+                              },
+                              "label": {
+                                "type": "string"
+                              },
+                              "active": {
+                                "type": "boolean"
+                              }
+                            },
+                            "required": [
+                              "url",
+                              "label",
+                              "active"
+                            ]
+                          }
+                        },
+                        "path": {
+                          "type": [
+                            "string",
+                            "null"
+                          ],
+                          "description": "Base path for paginator generated URLs."
+                        },
+                        "per_page": {
+                          "type": "integer",
+                          "description": "Number of items shown per page."
+                        },
+                        "to": {
+                          "type": [
+                            "integer",
+                            "null"
+                          ],
+                          "description": "Number of the last item in the slice."
+                        },
+                        "total": {
+                          "type": "integer",
+                          "description": "Total number of items being paginated."
+                        }
+                      },
+                      "required": [
+                        "current_page",
+                        "from",
+                        "last_page",
+                        "links",
+                        "path",
+                        "per_page",
+                        "to",
+                        "total"
+                      ]
+                    },
+                    "links": {
+                      "type": "object",
+                      "properties": {
+                        "first": {
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        },
+                        "last": {
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        },
+                        "prev": {
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        },
+                        "next": {
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        }
+                      },
+                      "required": [
+                        "first",
+                        "last",
+                        "prev",
+                        "next"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "data",
+                    "links",
+                    "meta"
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/AuthenticationException"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "http": {
+        "type": "http",
+        "description": "Visit your <a href='https://proxy-man.com/cabinet/profile'>Profile</a> to obtain the TOKEN.",
+        "scheme": "bearer",
+        "bearerFormat": ""
+      }
+    },
+    "schemas": {
+      "BalanceTransactionResource": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "amount": {
+            "type": "integer",
+            "description": "cents"
+          },
+          "comment": {
+            "type": "string"
+          },
+          "created_at": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "id",
+          "amount",
+          "comment",
+          "created_at"
+        ],
+        "title": "BalanceTransactionResource"
+      },
+      "CatalogItemResource": {
+        "type": "object",
+        "properties": {
+          "period": {
+            "type": "integer"
+          },
+          "country_id": {
+            "type": "integer"
+          },
+          "quantity": {
+            "type": "integer"
+          },
+          "price_per_unit": {
+            "type": "integer",
+            "description": "Price per unit in cents"
+          },
+          "protocols": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "period",
+          "country_id",
+          "quantity",
+          "price_per_unit",
+          "protocols"
+        ],
+        "title": "CatalogItemResource"
+      },
+      "CountryResource": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "code": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "icon": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "code",
+          "name",
+          "icon"
+        ],
+        "title": "CountryResource"
+      },
+      "CreateOrderRequest": {
+        "type": "object",
+        "properties": {
+          "proxy_type": {
+            "type": "string",
+            "enum": [
+              "individual_ipv4",
+              "static_residential_ipv4"
+            ]
+          },
+          "duration_minutes": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "country_id": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "quantity": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 200
+          },
+          "gate_id": {
+            "type": "integer"
+          }
+        },
+        "required": [
+          "proxy_type",
+          "duration_minutes",
+          "country_id",
+          "quantity",
+          "gate_id"
+        ],
+        "title": "CreateOrderRequest"
+      },
+      "CreateOrderTrafficProxyRequest": {
+        "type": "object",
+        "properties": {
+          "proxy_type": {
+            "type": "string",
+            "enum": [
+              "mobile_ipv4",
+              "datacenter_ipv4",
+              "residential_ipv4"
+            ]
+          },
+          "country": {
+            "type": "string"
+          },
+          "region": {
+            "type": "string"
+          },
+          "city": {
+            "type": "string"
+          },
+          "isp": {
+            "type": "string"
+          },
+          "ttl_minutes": {
+            "type": "integer",
+            "description": "-1 = rotate IP every request, 0 = keep ip as long as possible, 1+ = rotate every X minute",
+            "minimum": -1,
+            "maximum": 60
+          },
+          "protocol": {
+            "type": "string",
+            "enum": [
+              "http",
+              "socks5"
+            ]
+          },
+          "traffic_limit_mb": {
+            "type": "integer",
+            "minimum": 1000,
+            "maximum": 9999999999999
+          },
+          "gate_id": {
+            "type": [
+              "integer",
+              "null"
+            ]
+          }
+        },
+        "required": [
+          "proxy_type",
+          "ttl_minutes",
+          "protocol",
+          "traffic_limit_mb"
+        ],
+        "title": "CreateOrderTrafficProxyRequest"
+      },
+      "CreatePaymentRequest": {
+        "type": "object",
+        "properties": {
+          "source": {
+            "$ref": "#/components/schemas/PaymentSourceEnum"
+          },
+          "sum": {
+            "type": "integer",
+            "description": "USD cents",
+            "minimum": 500,
+            "maximum": 1000000
+          },
+          "additionalData": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "source",
+          "sum"
+        ],
+        "title": "CreatePaymentRequest"
+      },
+      "EditProxyRequest": {
+        "type": "object",
+        "properties": {
+          "proxy_id": {
+            "type": "integer"
+          },
+          "protocol": {
+            "type": "string",
+            "enum": [
+              "http",
+              "socks5"
+            ]
+          }
+        },
+        "required": [
+          "proxy_id",
+          "protocol"
+        ],
+        "title": "EditProxyRequest"
+      },
+      "EditTrafficProxyRequest": {
+        "type": "object",
+        "properties": {
+          "proxy_id": {
+            "type": "integer"
+          },
+          "country": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "region": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "city": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "isp": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "ttl_minutes": {
+            "type": "integer",
+            "description": "-1 = rotate IP every request, 0 = keep ip as long as possible, 1+ = rotate every X minute",
+            "minimum": -1,
+            "maximum": 60
+          },
+          "protocol": {
+            "type": "string",
+            "enum": [
+              "http",
+              "socks5"
+            ]
+          }
+        },
+        "required": [
+          "proxy_id",
+          "ttl_minutes",
+          "protocol"
+        ],
+        "title": "EditTrafficProxyRequest"
+      },
+      "OrderResource": {
+        "type": "object",
+        "properties": {
+          "uuid": {
+            "type": "string"
+          },
+          "quantity": {
+            "type": "integer"
+          },
+          "sum": {
+            "type": "integer"
+          },
+          "proxies": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ProxyResource"
+            }
+          }
+        },
+        "required": [
+          "uuid",
+          "quantity",
+          "sum",
+          "proxies"
+        ],
+        "title": "OrderResource"
+      },
+      "PaymentMethodResource": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "code": {
+            "type": "string"
+          },
+          "logo_path": {
+            "type": "string"
+          },
+          "is_active": {
+            "type": "boolean"
+          },
+          "min_amount_cents": {
+            "type": "integer"
+          },
+          "is_coupon": {
+            "type": "boolean"
+          },
+          "additional_data": {
+            "type": "array",
+            "items": {}
+          },
+          "priority": {
+            "type": "integer"
+          }
+        },
+        "required": [
+          "id",
+          "code",
+          "logo_path",
+          "is_active",
+          "min_amount_cents",
+          "is_coupon",
+          "additional_data",
+          "priority"
+        ],
+        "title": "PaymentMethodResource"
+      },
+      "PaymentResource": {
+        "type": "object",
+        "properties": {
+          "uuid": {
+            "type": "string"
+          },
+          "payment_link": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "uuid",
+          "payment_link"
+        ],
+        "title": "PaymentResource"
+      },
+      "PaymentSourceEnum": {
+        "type": "string",
+        "enum": [
+          "stripe",
+          "cryptoCloud",
+          "cryptomus",
+          "cryptoBot",
+          "tgStars",
+          "smsManBalance",
+          "alipay",
+          "wechat",
+          "cloudPayments",
+          "payeer",
+          "b2pay",
+          "manual"
+        ],
+        "title": "PaymentSourceEnum"
+      },
+      "PoolGateItemResource": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "min_price": {
+            "type": "string"
+          },
+          "options": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "min_price",
+          "options"
+        ],
+        "title": "PoolGateItemResource"
+      },
+      "PoolLocationItemResource": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "availability": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "code",
+          "name",
+          "availability"
+        ],
+        "title": "PoolLocationItemResource"
+      },
+      "ProlongTrafficProxyRequest": {
+        "type": "object",
+        "properties": {
+          "proxy_id": {
+            "type": "integer"
+          },
+          "prolong_mb": {
+            "type": "integer",
+            "minimum": 1000
+          },
+          "prolong_minutes": {
+            "type": "integer",
+            "minimum": 1
+          }
+        },
+        "required": [
+          "proxy_id"
+        ],
+        "title": "ProlongTrafficProxyRequest"
+      },
+      "ProxyResource": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "country_id": {
+            "type": "integer"
+          },
+          "type": {
+            "type": "string"
+          },
+          "price": {
+            "type": "integer"
+          },
+          "host": {
+            "type": "string"
+          },
+          "port": {
+            "type": "string"
+          },
+          "port_http": {
+            "type": [
+              "integer",
+              "null"
+            ]
+          },
+          "port_socks5": {
+            "type": [
+              "integer",
+              "null"
+            ]
+          },
+          "protocol": {
+            "type": "string"
+          },
+          "is_pool": {
+            "type": "string"
+          },
+          "pool_used_mb": {
+            "type": "integer"
+          },
+          "pool_limit_mb": {
+            "type": [
+              "integer",
+              "null"
+            ]
+          },
+          "pool_ttl_minutes": {
+            "type": [
+              "integer",
+              "null"
+            ]
+          },
+          "pool_country": {
+            "type": "string"
+          },
+          "pool_region": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "pool_city": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "pool_isp": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "pool_session_id": {
+            "type": "string"
+          },
+          "pool_refresh_link": {
+            "type": "string",
+            "example": ""
+          },
+          "gate_id": {
+            "type": "integer"
+          },
+          "user": {
+            "type": "string"
+          },
+          "password": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          },
+          "expires_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "expires_in_seconds": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "created_at": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time"
+          },
+          "is_auto_prolong_enabled": {
+            "type": "boolean"
+          },
+          "prolong_percent": {
+            "type": [
+              "integer",
+              "null"
+            ]
+          },
+          "prolong_mb": {
+            "type": [
+              "integer",
+              "null"
+            ]
+          }
+        },
+        "required": [
+          "id",
+          "country_id",
+          "type",
+          "price",
+          "host",
+          "port",
+          "port_http",
+          "port_socks5",
+          "protocol",
+          "is_pool",
+          "pool_used_mb",
+          "pool_limit_mb",
+          "pool_ttl_minutes",
+          "pool_country",
+          "pool_region",
+          "pool_city",
+          "pool_isp",
+          "pool_session_id",
+          "pool_refresh_link",
+          "gate_id",
+          "user",
+          "password",
+          "status",
+          "expires_at",
+          "expires_in_seconds",
+          "created_at",
+          "is_auto_prolong_enabled",
+          "prolong_percent",
+          "prolong_mb"
+        ],
+        "title": "ProxyResource"
+      },
+      "RedeemPaymentCodeRequest": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string",
+            "maxLength": 255
+          },
+          "payment_eid": {
+            "type": "string",
+            "maxLength": 255
+          }
+        },
+        "required": [
+          "code",
+          "payment_eid"
+        ],
+        "title": "RedeemPaymentCodeRequest"
+      },
+      "ReferralStatsResource": {
+        "type": "object",
+        "properties": {
+          "ref_link": {
+            "type": "string"
+          },
+          "total_count": {
+            "type": "string"
+          },
+          "total_amount": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "ref_link",
+          "total_count",
+          "total_amount"
+        ],
+        "title": "ReferralStatsResource"
+      },
+      "ReferralUserResource": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          },
+          "amount": {
+            "type": "string"
+          },
+          "created_at": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "email",
+          "amount",
+          "created_at"
+        ],
+        "title": "ReferralUserResource"
+      },
+      "ToggleAutoProlongRequest": {
+        "type": "object",
+        "properties": {
+          "proxy_id": {
+            "type": "integer"
+          },
+          "is_auto_prolong_enabled": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "proxy_id",
+          "is_auto_prolong_enabled"
+        ],
+        "title": "ToggleAutoProlongRequest"
+      },
+      "UserResource": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "balance": {
+            "type": "integer",
+            "description": "cents amount"
+          }
+        },
+        "required": [
+          "name",
+          "balance"
+        ],
+        "title": "UserResource"
+      }
+    },
+    "responses": {
+      "AuthenticationException": {
+        "description": "Unauthenticated",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string",
+                  "description": "Error overview."
+                }
+              },
+              "required": [
+                "message"
+              ]
+            }
+          }
+        }
+      },
+      "ValidationException": {
+        "description": "Validation error",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string",
+                  "description": "Errors overview."
+                },
+                "errors": {
+                  "type": "object",
+                  "description": "A detailed description of each field that failed validation.",
+                  "additionalProperties": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  }
+                }
+              },
+              "required": [
+                "message",
+                "errors"
+              ]
+            }
+          }
+        }
+      },
+      "AuthorizationException": {
+        "description": "Authorization error",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string",
+                  "description": "Error overview."
+                }
+              },
+              "required": [
+                "message"
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}
